@@ -8,31 +8,31 @@ def cartoonify(img_rgb):
     img_color = img_rgb
     # repeatedly apply small bilateral filter instead of applying
     # one large filter
+    # This is what is responsible for the "cartoon effet"
     for _ in range(numBilateralFilters):
-        img_color = cv2.bilateralFilter(img_color, 9, 9, 7)
-    print(img_color.shape)
+        img_color = cv2.bilateralFilter(img_color, 15, 30, 20)
 
+    #return img_color
+    # The following steps do edge detection and try to add a 
+    # border to the image
     # -- STEPS 2 and 3 --
     # convert to grayscale and apply median blur
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-    print(img_gray.shape)
     img_blur = cv2.medianBlur(img_gray, 7)
-    print(img_blur.shape)
 
     # -- STEP 4 --
     # detect and enhance edges
     img_edge = cv2.adaptiveThreshold(img_blur, 255,
                                      cv2.ADAPTIVE_THRESH_MEAN_C,
-                                     cv2.THRESH_BINARY, 9, 2)
+                                     cv2.THRESH_BINARY, 3, 2)
     print(img_edge.shape)
 
     # -- STEP 5 --
     # convert back to color so that it can be bit-ANDed with color image
     img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
-    print(img_edge.shape)
     return cv2.bitwise_and(img_color, img_edge)
 
-folder = 'Opencountry'
+folder = 'scratch'
 for filename in os.listdir(folder):
     img_rgb = cv2.imread(os.path.join(folder,filename))
     # If input file is img.jpg, name the output as img_cartoon.jpg
