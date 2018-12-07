@@ -33,6 +33,9 @@ def cartoonify(img_rgb):
     return cv2.bitwise_and(img_color, img_edge)
 
 folder = 'scratch'
+train_images = []
+train_outputs = []
+os.system('rm scratch/*_cartoon.jpg')
 for filename in os.listdir(folder):
     img_rgb = cv2.imread(os.path.join(folder,filename))
     # If input file is img.jpg, name the output as img_cartoon.jpg
@@ -41,4 +44,11 @@ for filename in os.listdir(folder):
 
     if img_rgb is not None:
         output = cartoonify(img_rgb)
+        train_images.append(img_rgb)
+        train_outputs.append(output)
         cv2.imwrite(os.path.join(folder,outputFilename), output)
+
+import pickle
+import numpy as np
+with open('training_data', 'wb') as training_data:
+    pickle.dump((np.array(train_images), np.array(train_outputs)), training_data)
