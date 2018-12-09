@@ -1,6 +1,10 @@
 import cv2
 import os
 
+"""
+Takes all the images in the scratch folder and ouputs cartoon versions 
+of them in the same folder
+"""
 def cartoonify(img_rgb):
     numBilateralFilters = 7  # number of bilateral filtering steps
 
@@ -25,7 +29,6 @@ def cartoonify(img_rgb):
     img_edge = cv2.adaptiveThreshold(img_blur, 255,
                                      cv2.ADAPTIVE_THRESH_MEAN_C,
                                      cv2.THRESH_BINARY, 3, 2)
-    print(img_edge.shape)
 
     # -- STEP 5 --
     # convert back to color so that it can be bit-ANDed with color image
@@ -33,8 +36,8 @@ def cartoonify(img_rgb):
     return cv2.bitwise_and(img_color, img_edge)
 
 folder = 'scratch'
-train_images = []
-train_outputs = []
+real_inputs = []
+cartoon_outputs = []
 os.system('rm scratch/*_cartoon.jpg')
 for filename in os.listdir(folder):
     img_rgb = cv2.imread(os.path.join(folder,filename))
@@ -44,11 +47,11 @@ for filename in os.listdir(folder):
 
     if img_rgb is not None:
         output = cartoonify(img_rgb)
-        train_images.append(img_rgb)
-        train_outputs.append(output)
+        real_inputs.append(img_rgb)
+        cartoon_outputs.append(output)
         cv2.imwrite(os.path.join(folder,outputFilename), output)
 
 import pickle
 import numpy as np
-with open('training_data', 'wb') as training_data:
-    pickle.dump((np.array(train_images), np.array(train_outputs)), training_data)
+with open('dataset', 'wb') as dataset:
+    pickle.dump((np.array(real_inputs), np.array(cartoon_outputs)), dataset)
