@@ -53,5 +53,8 @@ for filename in os.listdir(folder):
 
 import pickle
 import numpy as np
-with open('dataset', 'wb') as dataset:
-    pickle.dump((np.array(real_inputs), np.array(cartoon_outputs)), dataset)
+# Use all images except the last 10 for training the model, use those for testing
+with open('train_data', 'wb') as train_data:
+    pickle.dump((np.array(real_inputs[:-10]), np.array(cartoon_outputs[:-10])), train_data)
+with open('test_data', 'wb') as test_data:
+    pickle.dump((np.array(real_inputs[-10:]), np.array(cartoon_outputs[-10:])), test_data)
